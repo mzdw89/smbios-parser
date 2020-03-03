@@ -4,9 +4,25 @@
 
 namespace fi {
 	namespace smbios {
-		std::unordered_map< std::uint8_t, std::vector< detail::smbios_table_entry_t > > tables = { };
+		smbios_parser::smbios_parser( ) {
+			parse_smbios( );
+		}
+		
+		void smbios_parser::enum_tables( std::function< void( std::uint8_t table_type, std::uint8_t* const formatted_section, detail::table_string_container& table_strings ) > enum_fn ) {
+			for ( auto table_entries : m_tables ) {
+				//						Container of tables with the same type
+				for ( auto type_table : table_entries.second  ) {
+					//			Table type				Formatted section pointer
+					enum_fn( table_entries.first, type_table.formatted_section.data( ), type_table.strings );
+				}
+			}
+		}
 
-		void parse_smbios( ) {
+		double smbios_parser::get_version( ) {
+			return m_smbios_version;
+		}
+
+		void smbios_parser::parse_smbios( ) {
 			auto size = GetSystemFirmwareTable( 'RSMB', 0, nullptr, 0 );
 
 			if ( !size )
@@ -22,6 +38,8 @@ namespace fi {
 
 			auto smbios = reinterpret_cast< smbios_t* >( buffer );
 
+			save_smbios_version( smbios );
+
 			if ( smbios->length <= sizeof( smbios_t ) )
 				throw std::exception( "smbios::parse_smbios: SMBIOS table has no entries" );
 
@@ -34,13 +52,9 @@ namespace fi {
 				detail::table_string_container table_strings = { };
 				auto string_table_size = parse_string_table( string_table, table_strings );
 
-				// Copy the formatted section
-				std::vector< std::uint8_t > formatted_section( reinterpret_cast< std::uint8_t* >( table_header ), 
-					reinterpret_cast< std::uint8_t* >( table_header + table_header->length ) );
-
 				// Add the table into our parsed tables
 				// Some tables have multiple entries, which is why we use a container
-				tables[ table_header->type ].push_back( detail::smbios_table_entry_t( formatted_section, table_strings ) );
+				m_tables[ table_header->type ].emplace_back( table_header, table_strings );
 
 				// Go to next entry
 				table_header = reinterpret_cast< table_header_t* >( string_table + string_table_size );
@@ -48,19 +62,23 @@ namespace fi {
 
 			free( buffer );
 		}
-		
-		std::uint8_t parse_string_table( std::uint8_t* string_table, detail::table_string_container& out ) {
-			std::uint8_t size = 0;
+
+		void smbios_parser::save_smbios_version( smbios_t* smbios ) {
+			char version_string[ 8 ] = { 0 };
+			snprintf( version_string, std::size( version_string ), "%i.%i", smbios->major_version, smbios->minor_verion );
+
+			m_smbios_version = std::stod( version_string );
+		}
+
+		std::uint8_t smbios_parser::parse_string_table( std::uint8_t* string_table, detail::table_string_container& out ) {
 			std::string current_string = "";
-		
+			std::uint8_t size = 0, string_count = 1;
+
 			for ( ;; ) {
 				if ( *string_table )
-					current_string += *string_table;
-				else if ( !current_string.empty( ) ) {
-					// String end is marked with a null byte
-					out.push_back( current_string );
-					current_string.clear( );
-				}
+					out[ string_count ].push_back( *string_table );
+				else // String end is marked with a null byte
+					string_count++;
 
 				// End of structure is marked by 2x null bytes (end-of-string + additional null terminator)
 				if ( ( *string_table | *( string_table + 1 ) ) == 0 )
