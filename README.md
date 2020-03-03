@@ -2,12 +2,7 @@
 A small C++ library which helps you read the SMBIOS table.
 
 # Example
-```c++
-smbios::parse_smbios();
-
-smbios::system_information_t* sys_info = reinterpret_cast< smbios::system_information_t* >
-( smbios::tables[ smbios::table_types::system_information ][ 0 ].formatted_section.data( ) );
-```
+See [example.cpp]: https://github.com/forceinline/smbios-parser/blob/master/example.cpp
 
 
 # Notes
