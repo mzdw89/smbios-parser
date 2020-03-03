@@ -2,7 +2,7 @@
 A small C++ library which helps you read the SMBIOS table.
 
 # Example
-See [example.cpp]: https://github.com/forceinline/smbios-parser/blob/master/example.cpp
+See [example.cpp]: example.cpp
 
 
 # Notes
