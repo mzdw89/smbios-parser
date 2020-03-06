@@ -52,18 +52,39 @@ namespace fi {
 		};
 
 		namespace detail {
+			typedef std::uint16_t entry_handle;
 			typedef std::unordered_map< std::uint8_t, std::string > table_string_container;
 
 			struct smbios_table_entry_t {
 				smbios_table_entry_t( ) { }
 
-				smbios_table_entry_t( table_header_t* const table_header, const table_string_container& _table_strings ) : strings( _table_strings ) { 
+				smbios_table_entry_t( table_header_t* const table_header, entry_handle e_handle, const table_string_container& _table_strings ) : strings( _table_strings ), handle( e_handle ) { 
 					formatted_section.assign( reinterpret_cast< std::uint8_t* >( table_header ), reinterpret_cast< std::uint8_t* >( table_header + table_header->length ) );
 				}
 
+				entry_handle handle = 0;
 				table_string_container strings = { };
 				std::vector< std::uint8_t > formatted_section = { };
 			};
+
+			template < typename T > 
+			class smbios_table {
+			public:
+				smbios_table( ) { }
+				smbios_table( const smbios_table_entry_t& entry ) : m_entry( entry ) { }
+
+				std::string operator[]( int index ) {
+					return m_entry.strings[ index ];
+				}
+
+				T* operator->( ) {
+					return reinterpret_cast< T* >( m_entry.formatted_section.data( ) );
+				}
+
+			private:
+				smbios_table_entry_t m_entry = { };
+			};
+
 		} // namespace detail
 	} // namespace smbios
 } // namespace fi

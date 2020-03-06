@@ -9,7 +9,7 @@ int main( ) {
 
 		printf( "Your SMBIOS version is %.1f\n\n", smbios.get_version( ) );
 
-		smbios.enum_tables( [ &smbios ]( std::uint8_t table_type, std::uint8_t* const formatted_section, smbios::detail::table_string_container& table_strings ) {
+		smbios.enum_tables( [ &smbios ]( std::uint8_t table_type, smbios::detail::entry_handle entry_handle ) {
 			auto version = smbios.get_version( );
 
 			switch ( table_type ) {
@@ -17,18 +17,22 @@ int main( ) {
 				{
 					printf( "System Information:\n" );
 
-					auto sys_info = reinterpret_cast< smbios::system_information_t* >( formatted_section );
+					// Get the struct
+					auto sys_info = smbios.get_table_by_handle< smbios::system_information_t >( entry_handle );
 
+					// Check the version
 					if ( version >= 2 ) {
-						printf( "Manufacturer: %s\n", table_strings[ sys_info->id_manufacturer ].data( ) );
-						printf( "Product Name: %s\n", table_strings[ sys_info->id_product_name ].data( ) );
-						printf( "Version: %s\n", table_strings[ sys_info->id_version ].data( ) );
-						printf( "Serial Number: %s\n", table_strings[ sys_info->id_serial_number ].data( ) );
+						// Access the strings like you would in an array
+						// Members are being accessed as if sys_info were a pointer
+						printf( "Manufacturer: %s\n", sys_info[ sys_info->id_manufacturer ].data( ) );
+						printf( "Product Name: %s\n", sys_info[ sys_info->id_product_name ].data( ) );
+						printf( "Version: %s\n", sys_info[ sys_info->id_version ].data( ) );
+						printf( "Serial Number: %s\n", sys_info[ sys_info->id_serial_number ].data( ) );
 					}
 					
 					if ( version >= 2.4 ) {
-						printf( "SKU Number: %s\n", table_strings[ sys_info->id_sku_number ].data( ) );
-						printf( "Family: %s\n", table_strings[ sys_info->id_family ].data( ) );
+						printf( "SKU Number: %s\n", sys_info[ sys_info->id_sku_number ].data( ) );
+						printf( "Family: %s\n", sys_info[ sys_info->id_family ].data( ) );
 					}
 
 					break;
