@@ -12,6 +12,7 @@
 
 namespace fi {
 	namespace smbios {
+	#pragma pack(push, 1)
 		struct smbios_t {
 			std::uint8_t	calling_method;
 			std::uint8_t	major_version;
@@ -46,8 +47,48 @@ namespace fi {
 			std::uint8_t	id_family;
 		};
 
+		struct memory_device_t : public table_header_t {
+			std::uint16_t physical_memory_array_handle;
+			std::uint16_t memory_error_information_handle;
+			std::uint16_t total_width;
+			std::uint16_t data_width;
+			std::uint16_t size;
+			std::uint8_t form_factor;
+			std::uint8_t device_set;
+			std::uint8_t device_locator;
+			std::uint8_t bank_locator;
+			std::uint8_t memory_type;
+			std::uint16_t type_detail;
+			std::uint16_t speed;
+			std::uint8_t id_manufacturer;
+			std::uint8_t id_serial_number;
+			std::uint8_t id_asset_tag;
+			std::uint8_t id_part_number;
+			std::uint8_t attributes;
+			std::uint32_t extended_size;
+			std::uint16_t configured_memory_speed;
+			std::uint16_t minimum_voltage;
+			std::uint16_t maximum_voltage;
+			std::uint16_t configured_voltage;
+			std::uint8_t memory_technology;
+			std::uint16_t memory_operating_mode_capability;
+			std::uint8_t firmware_version;
+			std::uint16_t module_manufacturer_id;
+			std::uint16_t module_product_id;
+			std::uint16_t memory_subsystem;
+			std::uint16_t memory_subsystem_controller_product_id;
+			std::uint64_t non_volatile_size;
+			std::uint64_t volatile_size;
+			std::uint64_t cache_size;
+			std::uint64_t logical_size;
+			std::uint32_t extended_speed;
+			std::uint32_t extended_configured_memory_speed;
+		};
+	#pragma pack(pop)
+
 		enum table_types : std::uint8_t {
 			system_information = 1,
+			memory_device = 17,
 			end_of_table = 127 // Has a lenght of 4
 		};
 
