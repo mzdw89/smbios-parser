@@ -5,6 +5,7 @@
 #ifndef SMBIOS_STRUCTS_H
 #define SMBIOS_STRUCTS_H
 
+#include "enums.h"
 #include <cstdint>
 #include <vector>
 #include <unordered_map>
@@ -26,6 +27,21 @@ namespace fi {
 			std::uint8_t	length;
 			std::uint16_t	handle;
 		};
+		
+		struct bios_information_t : public table_header_t {
+			std::uint8_t	id_vendor;
+			std::uint8_t	id_bios_version;
+			std::uint16_t	bios_starting_address_segment;
+			std::uint8_t	id_bios_release_date;
+			std::uint8_t	bios_rom_size;
+			std::uint64_t	bios_charateristics;
+			std::uint16_t	bios_characteristics_extensions;
+			std::uint8_t	bios_major_release;
+			std::uint8_t	bios_minor_release;
+			std::uint8_t	embedded_controller_fw_major_release;
+			std::uint8_t	embedded_controler_fw_minor_release;
+			std::uint16_t	extended_bios_rom_size;
+		};
 
 		struct smbios_uuid_t {
 			std::uint32_t	time_low;
@@ -45,6 +61,20 @@ namespace fi {
 			std::uint8_t	wake_up_type;
 			std::uint8_t	id_sku_number;
 			std::uint8_t	id_family;
+		};
+
+		struct baseboard_information_t : public table_header_t {
+			std::uint8_t	id_manufacturer;
+			std::uint8_t	id_product;
+			std::uint8_t	id_version;
+			std::uint8_t	id_serial_number;
+			std::uint8_t	id_asset_tag;
+			baseboard_feature_flags	feature_flags;
+			std::uint8_t	id_location_in_chassis;
+			std::uint16_t	chassis_handle;
+			baseboard_board_types	board_type;
+			std::uint8_t	num_object_handles;
+			std::uint16_t	object_handles[];
 		};
 
 		struct memory_device_t : public table_header_t {
@@ -87,7 +117,9 @@ namespace fi {
 	#pragma pack(pop)
 
 		enum table_types : std::uint8_t {
+			bios_information = 0,
 			system_information = 1,
+			baseboard_information = 2,
 			memory_device = 17,
 			end_of_table = 127 // Has a lenght of 4
 		};
