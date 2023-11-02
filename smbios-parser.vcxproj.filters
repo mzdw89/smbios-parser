@@ -19,4 +19,8 @@
   <ItemGroup>
     <ClCompile Include="example.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="LICENSE" />
+    <None Include="README.md" />
+  </ItemGroup>
 </Project>

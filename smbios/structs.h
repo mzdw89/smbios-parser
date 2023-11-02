@@ -11,167 +11,192 @@
 #include <unordered_map>
 #include <string>
 
-namespace fi {
-	namespace smbios {
-	#pragma pack(push, 1)
-		struct smbios_t {
-			std::uint8_t	calling_method;
-			std::uint8_t	major_version;
-			std::uint8_t	minor_verion;
-			std::uint8_t	dmi_revision;
-			std::uint32_t	length;
-		};
+namespace smbios {
+	using byte = std::uint8_t;
+	using word = std::uint16_t;
+	using dword = std::uint32_t;
+	using qword = std::uint64_t;
 
-		struct table_header_t {
-			std::uint8_t	type;
-			std::uint8_t	length;
-			std::uint16_t	handle;
-		};
+#pragma pack(push, 1)
+	struct SMBios
+	{
+		byte calling_method;
+		byte major_version;
+		byte minor_verion;
+		byte dmi_revision;
+		dword length;
+	};
+
+	struct TableHeader
+	{
+		byte type;
+		byte length;
+		word handle;
+	};
 		
-		struct bios_information_t : public table_header_t {
-			std::uint8_t	id_vendor;
-			std::uint8_t	id_bios_version;
-			std::uint16_t	bios_starting_address_segment;
-			std::uint8_t	id_bios_release_date;
-			std::uint8_t	bios_rom_size;
-			std::uint64_t	bios_charateristics;
-			std::uint16_t	bios_characteristics_extensions;
-			std::uint8_t	bios_major_release;
-			std::uint8_t	bios_minor_release;
-			std::uint8_t	embedded_controller_fw_major_release;
-			std::uint8_t	embedded_controler_fw_minor_release;
-			std::uint16_t	extended_bios_rom_size;
-		};
+	struct BiosInformation : public TableHeader
+	{
+		byte id_vendor;
+		byte id_bios_version;
+		word bios_starting_address_segment;
+		byte id_bios_release_date;
+		byte bios_rom_size;
+		qword bios_charateristics;
+		word bios_characteristics_extensions;
+		byte bios_major_release;
+		byte bios_minor_release;
+		byte embedded_controller_fw_major_release;
+		byte embedded_controler_fw_minor_release;
+		word extended_bios_rom_size;
+	};
 
-		struct smbios_uuid_t {
-			std::uint32_t	time_low;
-			std::uint16_t	time_mid;
-			std::uint16_t	time_hi_and_version;
-			std::uint8_t	clock_seq_hi_and_reversed;
-			std::uint8_t	clock_seq_low;
-			std::uint8_t	node[ 6 ];
-		};
+	struct SMBiosUUID
+	{
+		dword time_low;
+		word time_mid;
+		word time_hi_and_version;
+		byte clock_seq_hi_and_reversed;
+		byte clock_seq_low;
+		byte node[6];
+	};
 
-		struct system_information_t : public table_header_t {
-			std::uint8_t	id_manufacturer;
-			std::uint8_t	id_product_name;
-			std::uint8_t	id_version;
-			std::uint8_t	id_serial_number;
-			smbios_uuid_t	uuid;
-			std::uint8_t	wake_up_type;
-			std::uint8_t	id_sku_number;
-			std::uint8_t	id_family;
-		};
+	struct SystemInformation : public TableHeader
+	{
+		byte id_manufacturer;
+		byte id_product_name;
+		byte id_version;
+		byte id_serial_number;
+		SMBiosUUID uuid;
+		byte wake_up_type;
+		byte id_sku_number;
+		byte id_family;
+	};
 
-		struct baseboard_information_t : public table_header_t {
-			std::uint8_t	id_manufacturer;
-			std::uint8_t	id_product;
-			std::uint8_t	id_version;
-			std::uint8_t	id_serial_number;
-			std::uint8_t	id_asset_tag;
-			baseboard_feature_flags	feature_flags;
-			std::uint8_t	id_location_in_chassis;
-			std::uint16_t	chassis_handle;
-			baseboard_board_types	board_type;
-			std::uint8_t	num_object_handles;
-			std::uint16_t	object_handles[];
-		};
+	struct BaseboardInformation : public TableHeader
+	{
+		byte id_manufacturer;
+		byte id_product;
+		byte id_version;
+		byte id_serial_number;
+		byte id_asset_tag;
+		Baseboard_FeatureFlags	feature_flags;
+		byte id_location_in_chassis;
+		word chassis_handle;
+		Baseboard_BoardTypes board_type;
+		byte num_object_handles;
+		word object_handles[];
+	};
 
-		struct memory_device_t : public table_header_t {
-			std::uint16_t physical_memory_array_handle;
-			std::uint16_t memory_error_information_handle;
-			std::uint16_t total_width;
-			std::uint16_t data_width;
-			std::uint16_t size;
-			std::uint8_t form_factor;
-			std::uint8_t device_set;
-			std::uint8_t id_device_locator;
-			std::uint8_t id_bank_locator;
-			std::uint8_t memory_type;
-			std::uint16_t type_detail;
-			std::uint16_t speed;
-			std::uint8_t id_manufacturer;
-			std::uint8_t id_serial_number;
-			std::uint8_t id_asset_tag;
-			std::uint8_t id_part_number;
-			std::uint8_t attributes;
-			std::uint32_t extended_size;
-			std::uint16_t configured_memory_speed;
-			std::uint16_t minimum_voltage;
-			std::uint16_t maximum_voltage;
-			std::uint16_t configured_voltage;
-			std::uint8_t memory_technology;
-			std::uint16_t memory_operating_mode_capability;
-			std::uint8_t id_firmware_version;
-			std::uint16_t module_manufacturer_id;
-			std::uint16_t module_product_id;
-			std::uint16_t memory_subsystem;
-			std::uint16_t memory_subsystem_controller_product_id;
-			std::uint64_t non_volatile_size;
-			std::uint64_t volatile_size;
-			std::uint64_t cache_size;
-			std::uint64_t logical_size;
-			std::uint32_t extended_speed;
-			std::uint32_t extended_configured_memory_speed;
-		};
+	struct MemoryDevice : public TableHeader
+	{
+		word physical_memory_array_handle;
+		word memory_error_information_handle;
+		word total_width;
+		word data_width;
+		word size;
+		byte form_factor;
+		byte device_set;
+		byte id_device_locator;
+		byte id_bank_locator;
+		byte memory_type;
+		word type_detail;
+		word speed;
+		byte id_manufacturer;
+		byte id_serial_number;
+		byte id_asset_tag;
+		byte id_part_number;
+		byte attributes;
+		dword extended_size;
+		word configured_memory_speed;
+		word minimum_voltage;
+		word maximum_voltage;
+		word configured_voltage;
+		byte memory_technology;
+		word memory_operating_mode_capability;
+		byte id_firmware_version;
+		word module_manufacturer_id;
+		word module_product_id;
+		word memory_subsystem;
+		word memory_subsystem_controller_product_id;
+		qword non_volatile_size;
+		qword volatile_size;
+		qword cache_size;
+		qword logical_size;
+		dword extended_speed;
+		dword extended_configured_memory_speed;
+	};
 		
-		struct tpm_device_t : public table_header_t {
-			std::uint8_t	vendor_id [ 4 ];
-			std::uint8_t	major_spec_version;
-			std::uint8_t	minor_spec_version;
-			std::uint32_t	fw_version_1;
-			std::uint32_t	fw_version_2;
-			std::uint8_t	id_description;
-			tpm_characteristics_t	tpm_characteristics;
-			std::uint32_t	vendor_specific_information;
+	struct TpmDevice : public TableHeader
+	{
+		byte vendor_id [4];
+		byte major_spec_version;
+		byte minor_spec_version;
+		dword fw_version_1;
+		dword fw_version_2;
+		byte id_description;
+		TpmCharacteristics tpm_characteristics;
+		dword vendor_specific_information;
+	};
+#pragma pack(pop)
+
+	// use old enum 
+	enum TableTypes : byte
+	{
+		bios_information = 0,
+		system_information = 1,
+		baseboard_information = 2,
+		memory_device = 17,
+		tpm_device = 43,
+		end_of_table = 127 // Has a lenght of 4
+	};
+
+	namespace detail
+	{
+		using entry_handle = word;
+		using table_string_container = std::unordered_map<byte, std::string>;
+
+		struct smbios_table_entry
+		{
+			smbios_table_entry() noexcept { }
+
+			smbios_table_entry(
+				TableHeader* const table_header, 
+				entry_handle e_handle, 
+				const table_string_container& _table_strings) 
+				: strings(_table_strings), 
+				handle(e_handle) 
+			{ 
+				formatted_section.assign(
+					reinterpret_cast<byte*>(table_header), 
+					reinterpret_cast<byte*>(table_header + table_header->length));
+			}
+			entry_handle handle = 0;
+			table_string_container strings = { };
+			std::vector<byte> formatted_section = { };
 		};
-	#pragma pack(pop)
 
-		enum table_types : std::uint8_t {
-			bios_information = 0,
-			system_information = 1,
-			baseboard_information = 2,
-			memory_device = 17,
-			tpm_device = 43,
-			end_of_table = 127 // Has a lenght of 4
+		template <typename T> 
+		class smbios_table
+		{
+		public:
+			smbios_table() noexcept { }
+			smbios_table(const smbios_table_entry& entry) : m_entry(entry) { }
+
+			std::string operator[](int index)
+			{
+				return m_entry.strings[index];
+			}
+
+			const T* operator->() const noexcept
+			{
+				return reinterpret_cast<const T*>(m_entry.formatted_section.data());
+			}
+
+		private:
+			smbios_table_entry m_entry = { };
 		};
 
-		namespace detail {
-			typedef std::uint16_t entry_handle;
-			typedef std::unordered_map< std::uint8_t, std::string > table_string_container;
-
-			struct smbios_table_entry_t {
-				smbios_table_entry_t( ) { }
-
-				smbios_table_entry_t( table_header_t* const table_header, entry_handle e_handle, const table_string_container& _table_strings ) : strings( _table_strings ), handle( e_handle ) { 
-					formatted_section.assign( reinterpret_cast< std::uint8_t* >( table_header ), reinterpret_cast< std::uint8_t* >( table_header + table_header->length ) );
-				}
-
-				entry_handle handle = 0;
-				table_string_container strings = { };
-				std::vector< std::uint8_t > formatted_section = { };
-			};
-
-			template < typename T > 
-			class smbios_table {
-			public:
-				smbios_table( ) { }
-				smbios_table( const smbios_table_entry_t& entry ) : m_entry( entry ) { }
-
-				std::string operator[]( int index ) {
-					return m_entry.strings[ index ];
-				}
-
-				T* operator->( ) {
-					return reinterpret_cast< T* >( m_entry.formatted_section.data( ) );
-				}
-
-			private:
-				smbios_table_entry_t m_entry = { };
-			};
-
-		} // namespace detail
-	} // namespace smbios
-} // namespace fi
+	} // namespace detail
+} // namespace smbios
 
 #endif // SMBIOS_STRUCT_H
