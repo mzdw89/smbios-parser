@@ -32,6 +32,15 @@ namespace fi {
 			processor_io_module = 0x0C,
 			interconnect_board = 0x0D
 		};
+		
+		enum class tpm_characteristics_t : uint64_t {
+			// bits 0:1 = reserved
+			charateristics_not_supported = 1 << 2,
+			configurable_by_fw_update = 1 << 3,
+			configurable_by_platform = 1 << 4,
+			configurable_by_oem = 1 << 5
+			// bits 6:63 = reserved
+		};
 	} // namespace smbios
 } // namespace fi
 

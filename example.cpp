@@ -73,9 +73,22 @@ int main( ) {
 						printf( "Asset Tag: %s\n", board_info[ board_info->id_asset_tag ].data( ) );
 					}
 					
+					printf("\n");
+					break;					
+				}
+				case smbios::table_types::tpm_device:
+				{
+					printf( "[TPM Device]\n" );
+
+					auto tpm_info = smbios.get_table_by_handle< smbios::tpm_device_t >( entry_handle );
+					printf( "Vendor ID: %c%c%c%c\n", tpm_info->vendor_id[0], tpm_info->vendor_id[1], tpm_info->vendor_id[2], tpm_info->vendor_id[3] );
+					printf( "TPM Version: %i.%i\n", tpm_info->major_spec_version, tpm_info->minor_spec_version );
+					if ( version >= 2 ) {
+						printf( "Description: %s\n", tpm_info[ tpm_info->id_description ].data( ) );
+					}
+					printf("\n");
 					break;
 				}
-				
 			}
 		} );
 	} catch ( const std::exception& e ) {

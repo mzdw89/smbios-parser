@@ -114,6 +114,17 @@ namespace fi {
 			std::uint32_t extended_speed;
 			std::uint32_t extended_configured_memory_speed;
 		};
+		
+		struct tpm_device_t : public table_header_t {
+			std::uint8_t	vendor_id [ 4 ];
+			std::uint8_t	major_spec_version;
+			std::uint8_t	minor_spec_version;
+			std::uint32_t	fw_version_1;
+			std::uint32_t	fw_version_2;
+			std::uint8_t	id_description;
+			tpm_characteristics_t	tpm_characteristics;
+			std::uint32_t	vendor_specific_information;
+		};
 	#pragma pack(pop)
 
 		enum table_types : std::uint8_t {
@@ -121,6 +132,7 @@ namespace fi {
 			system_information = 1,
 			baseboard_information = 2,
 			memory_device = 17,
+			tpm_device = 43,
 			end_of_table = 127 // Has a lenght of 4
 		};
 
