@@ -85,8 +85,8 @@ namespace fi {
 			std::uint16_t size;
 			std::uint8_t form_factor;
 			std::uint8_t device_set;
-			std::uint8_t device_locator;
-			std::uint8_t bank_locator;
+			std::uint8_t id_device_locator;
+			std::uint8_t id_bank_locator;
 			std::uint8_t memory_type;
 			std::uint16_t type_detail;
 			std::uint16_t speed;
@@ -102,7 +102,7 @@ namespace fi {
 			std::uint16_t configured_voltage;
 			std::uint8_t memory_technology;
 			std::uint16_t memory_operating_mode_capability;
-			std::uint8_t firmware_version;
+			std::uint8_t id_firmware_version;
 			std::uint16_t module_manufacturer_id;
 			std::uint16_t module_product_id;
 			std::uint16_t memory_subsystem;
