@@ -1,4 +1,4 @@
-#include "smbios/smbios.h"
+#include "smbios/smbios.hpp"
 #include <iostream>
 
 namespace smbios = fi::smbios;
