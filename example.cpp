@@ -89,6 +89,31 @@ int main( ) {
 					printf("\n");
 					break;
 				}
+				case smbios::table_types::memory_device:
+				{
+					auto mem_device = smbios.get_table_by_handle< smbios::memory_device_t >( entry_handle );
+					
+					if (mem_device->size > 0) { // skip empty banks
+						printf( "[Memory Device]\n" );
+
+						printf( "Size: %d\n", mem_device->size );
+						if ( version >= 2.1 ) {
+							printf( "Device Locator: %s\n", mem_device[ mem_device->id_device_locator ].data( ) );
+							printf( "Bank Locator: %s\n", mem_device[ mem_device->id_bank_locator ].data( ) );
+						}
+						if ( version >= 2.3 ) {
+							printf( "Manufacturer: %s\n", mem_device[ mem_device->id_manufacturer ].data( ) );
+							printf( "Serial Number: %s\n", mem_device[ mem_device->id_serial_number ].data( ) );
+							printf( "Asset Tag: %s\n", mem_device[ mem_device->id_asset_tag ].data( ) );
+							printf( "Part Number: %s\n", mem_device[ mem_device->id_part_number ].data( ) );
+						}
+						if ( version >= 3.2 ) {
+							printf( "Firmware Version: %s\n", mem_device[ mem_device->id_firmware_version ].data( ) );
+						}
+						printf("\n");
+					}					
+					break;
+				}
 			}
 		} );
 	} catch ( const std::exception& e ) {
