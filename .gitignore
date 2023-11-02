@@ -1,0 +1,11 @@
+.vs/
+*.obj
+*.pdb
+*.recipe
+*.ilk
+*.user
+*.idb
+*.tlog
+*.log
+*.vcxproj.FileListAbsolute.txt
+x64/
